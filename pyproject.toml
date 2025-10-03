@@ -1,0 +1,35 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "yaslis"
+version = "0.0.1"
+authors = [
+    { name="Eldana Ashirova", email="" },
+    { name="Adam Badr", email="Adambadr27@hotmail.com" },
+    { name="Abror Shopulatov", email="murodbeck@proton.me" },
+]
+maintainers = [
+    { name="Eldana Ashirova", email="" },
+    { name="Adam Badr", email="Adambadr27@hotmail.com" },
+    { name="Abror Shopulatov", email="murodbeck@proton.me" },
+]
+license = {file = "LICENSE"}
+readme = "README.md"
+keywords = ["library", "library-system", "management-system", "book", "search", "geospatial", "cli"]
+description = "YASLIS - Yet Another Smart Library System for storing and querying books with users with searching capabilities."
+requires-python = ">=3.6"
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Topic :: Database :: Front-Ends",
+    "Topic :: Software Development :: Libraries :: Application Frameworks",
+    "Environment :: Console"
+]
+
+[project.urls]
+"Homepage" = "https://github.com/murodbecks/yaslis"
+"Bug Tracker" = "https://github.com/murodbecks/yaslis/issues"
+"Repository" = "https://github.com/murodbecks/yaslis"
