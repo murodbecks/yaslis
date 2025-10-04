@@ -31,6 +31,7 @@ classifiers = [
 
 dependencies = [
     "pandas==2.3.3",
+    "jsonlines==4.0.0"
 ]
 
 [project.urls]

@@ -17,6 +17,15 @@ def check_type(variable, expected_type, var_name=None):
         raise ValueValidationError(f"`{name}` must be {type_name}, got {type(variable).__name__}.")
     return True
 
+def format_list(input_list : list, max_items: int=5) -> str:
+    check_type(input_list, list, "input_list")
+    check_type(max_items, int, "max_items")
+
+    if len(input_list) <= max_items:
+        return '[' + ", ".join(input_list) + ']'
+    else:
+        return '[' + ", ".join(input_list[:max_items]) + f"... (+{len(input_list) - max_items} more)]"
+
 def prepare_id(book_id: Union[int, str]) -> str:
     if not isinstance(book_id, Union[int, str]):
         return 'book_'
