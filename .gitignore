@@ -1,5 +1,11 @@
 playground.ipynb
 
+configs/*.jsonl
+configs/*.csv
+
+!configs/sample_books.jsonl
+!configs/sample_users.jsonl
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

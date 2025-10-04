@@ -29,7 +29,14 @@ classifiers = [
     "Environment :: Console"
 ]
 
+dependencies = [
+    "pandas==2.3.3",
+]
+
 [project.urls]
 "Homepage" = "https://github.com/murodbecks/yaslis"
 "Bug Tracker" = "https://github.com/murodbecks/yaslis/issues"
 "Repository" = "https://github.com/murodbecks/yaslis"
+
+[project.scripts]
+yaslis = "yaslis.cli:main"

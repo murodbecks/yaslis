@@ -1,0 +1,10 @@
+{"id": "user_001", "name": "Sarah Chen", "borrowed_books": ["book_001", "book_014"], "history": ["book_010", "book_011", "book_001", "book_014"]}
+{"id": "user_002", "name": "Marcus Rodriguez", "borrowed_books": ["book_007", "book_008"], "history": ["book_007", "book_009", "book_008"]}
+{"id": "user_003", "name": "Emily Thompson", "borrowed_books": ["book_017"], "history": ["book_017", "book_018", "book_019", "book_020"]}
+{"id": "user_004", "name": "Ahmed Hassan", "borrowed_books": ["book_003", "book_005"], "history": ["book_001", "book_002", "book_003", "book_005"]}
+{"id": "user_005", "name": "Julia Kowalski", "borrowed_books": ["book_015"], "history": ["book_014", "book_015", "book_016"]}
+{"id": "user_006", "name": "David Kim", "borrowed_books": ["book_011", "book_012"], "history": ["book_010", "book_011", "book_012", "book_013"]}
+{"id": "user_007", "name": "Maria Silva", "borrowed_books": [], "history": ["book_006", "book_004", "book_005"]}
+{"id": "user_008", "name": "Alex Johnson", "borrowed_books": ["book_006"], "history": ["book_001", "book_006"]}
+{"id": "user_009", "name": "Priya Patel", "borrowed_books": ["book_021"], "history": ["book_018", "book_019", "book_021"]}
+{"id": "user_010", "name": "Thomas Mueller", "borrowed_books": ["book_002", "book_016"], "history": ["book_008", "book_009", "book_002", "book_016"]}
