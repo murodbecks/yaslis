@@ -184,9 +184,19 @@ class Library:
             if book.get_id() == book_id:
                 return book
 
-    def recommend_book(self):
-        # TODO: implement basic recommendation
-        pass
+    def recommend_books_based_off_a_book_simple(self, thebookinquestion: Book, numberofrecommendations = 10) -> list:
+        sortedlist = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
+        truncated_recommendations = sortedlist[:numberofrecommendations]
+        return truncated_recommendations
+    def recommend_books_based_off_a_book_improved(self, thebookinquestion: Book, numberofrecommendations = 10) -> list:
+        #Same genre and sort by highest rating
+        recommendations = []
+        for book in self.get_books():
+            if book.get_genre() == thebookinquestion.get_genre() and book.get_id() != thebookinquestion.get_id():
+                recommendations.append(book)
+        recommendations = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
+        truncated_recommendations = recommendations[:numberofrecommendations]
+        return truncated_recommendations
 
     # dunder methods
     def __repr__(self) -> str:
