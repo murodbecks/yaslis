@@ -1,5 +1,6 @@
 import os
 import jsonlines
+import re, difflib
 from typing import Union
 from yaslis.book import Book
 from yaslis.user import User
@@ -183,6 +184,29 @@ class Library:
         for book in self.get_books():
             if book.get_id() == book_id:
                 return book
+                
+
+    def improved_search(self, title: str, fuzzy: bool = True) -> list:
+
+        if not title:
+            return []
+        query = re.sub(r"\s+", " ", title).strip().lower()
+
+        # Exact match
+        exact_matches = [b for b in self._all_books if b.get_title().strip().lower() == query]
+        if exact_matches:
+            return exact_matches
+
+        # Fuzzy fallback
+        if fuzzy:
+            all_titles = [b.get_title() for b in self._all_books]
+            close_titles = difflib.get_close_matches(title, all_titles, n=10, cutoff=0.6)
+            return [b for b in self._all_books if b.get_title() in close_titles]
+
+        # no matches
+        return []
+
+    
 
     def recommend_books_based_off_a_book_simple(self, thebookinquestion: Book, numberofrecommendations = 10) -> list:
         sortedlist = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
