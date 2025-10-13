@@ -94,84 +94,84 @@ class Library:
         self._all_users.append(user)
         return True
     
-    def remove_book(self, book_id: str) -> bool:
-        check_type(book_id, str, "book_id")
+    def remove_book(self, book_title: str) -> bool:
+        check_type(book_title, str, "book_title")
 
-        if book_id not in self.get_book_ids():
-            print(f"Warning: {book_id} not found existing books. Not removing")
+        if book_title not in self.get_book_titles():
+            print(f"Warning: {book_title} not found existing books. Not removing")
             return False
         
         # removing book
         all_books = self.get_books()
         for book in all_books:
-            if book.get_id() == book_id:
+            if book.get_title() == book_title:
                 self._all_books.remove(book)
         
         # removing from user history and borrowed books
         for user in self._all_users:
-            if book_id in user.get_book_ids_in_history():
-                user.history.remove(book_id)
+            if book_title in user.get_book_titles_in_history():
+                user.history.remove(book_title)
             
-            if book_id in user.get_borrowed_book_ids():
-                user.borrowed_books.remove(book_id)
+            if book_title in user.get_borrowed_book_titles():
+                user.borrowed_books.remove(book_title)
         
         return True
 
-    def remove_user(self, user_id: str) -> bool:
-        check_type(user_id, str, "user_id")
+    def remove_user(self, user_name: str) -> bool:
+        check_type(user_name, str, "user_name")
 
-        if user_id not in self.get_user_ids():
-            print(f"Warning: {user_id} not found existing users. Not removing")
+        if user_name not in self.get_user_names():
+            print(f"Warning: {user_name} not found existing users. Not removing")
             return False
         
         # removing from users
         all_users = self.get_users()
         for user in all_users:
-            if user.get_id() == user_id:
+            if user.get_name() == user_name:
                 self._all_users.remove(user)
         
         return True
 
-    def checkout_book(self, book_id: str, user_id: str) -> bool:
-        check_type(book_id, str, "book_id")
-        check_type(user_id, str, "user_id")
+    def checkout_book(self, book_title: str, user_name: str) -> bool:
+        check_type(book_title, str, "book_title")
+        check_type(user_name, str, "user_name")
 
-        if book_id not in self.get_book_ids():
-            print(f"Warning: {book_id} not found existing books. Not checking out")
+        if book_title not in self.get_book_titles():
+            print(f"Warning: {book_title} not found existing books. Not checking out")
             return False
         
-        if user_id not in self.get_user_ids():
-            print(f"Warning: {user_id} not found existing users. Not checking out")
+        if user_name not in self.get_user_names():
+            print(f"Warning: {user_name} not found existing users. Not checking out")
             return False
         
         for book in self.get_books():
-            if book.get_id() == book_id:
+            if book.get_title() == book_title:
                 chosen_book = book
                 break
 
         for user in self.get_users():
-            if user.get_id() == user_id:
+            if user.get_name() == user_name:
                 user.borrow_book(chosen_book)
 
-    def checkin_book(self, book_id: str, user_id: str) -> bool:
-        check_type(book_id, str, "book_id")
-        check_type(user_id, str, "user_id")
+    def checkin_book(self, book_title: str, user_name: str) -> bool:
+        check_type(book_title, str, "book_title")
+        check_type(user_name, str, "user_name")
 
-        if book_id not in self.get_book_ids():
-            print(f"Warning: {book_id} not found existing books. Not checking in")
+        if book_title not in self.get_book_titles():
+            print(f"Warning: {book_title} not found existing books. Not checking in")
             return False
         
-        if user_id not in self.get_user_ids():
-            print(f"Warning: {user_id} not found existing users. Not checking in")
+        if user_name not in self.get_user_names():
+            print(f"Warning: {user_name} not found existing users. Not checking in")
             return False
         
         for book in self.get_books():
-            if book.get_id() == book_id:
+            if book.get_title() == book_title:
                 chosen_book = book
                 break
 
         for user in self.get_users():
-            if user.get_id() == user_id:
+            if user.get_name() == user_name:
                 user.return_book(chosen_book)
 
     def search_book(self, book_title: str) -> Book:
@@ -225,8 +225,9 @@ class Library:
                 recommendations.append((book, genre_overlap_ratio))
         
         sorted_recommendations = sorted(recommendations, key = lambda x: (x[1], x[0].get_rating() is not None, x[0].get_rating()), reverse=True)
+        chosen_recommendations = [book for book, _ in sorted_recommendations[:num_recommendations]]
 
-        return sorted_recommendations[:num_recommendations]
+        return chosen_recommendations
 
     # dunder methods
     def __repr__(self) -> str:
