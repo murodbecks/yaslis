@@ -174,20 +174,17 @@ class Library:
             if user.get_id() == user_id:
                 user.return_book(chosen_book)
 
-    def search_book(self, book_id: str) -> Book:
-        check_type(book_id, str, "book_id")
-
-        if book_id not in self.get_book_ids():
-            print(f"Warning: {book_id} not found existing books")
-            return None
+    def search_book(self, book_title: str) -> Book:
+        check_type(book_title, str, "book_title")
         
         for book in self.get_books():
-            if book.get_id() == book_id:
+            if book.get_title() == book_title:
                 return book
-                
+        
+        print(f"Warning: {book_title} not found existing books")
+        return None  
 
-    def improved_search(self, title: str, fuzzy: bool = True) -> list:
-
+    def search_book_improved(self, title: str, fuzzy: bool = True) -> list:
         if not title:
             return []
         query = re.sub(r"\s+", " ", title).strip().lower()
@@ -206,21 +203,30 @@ class Library:
         # no matches
         return []
 
-    
+    def recommend_books(self, num_recommendations: int = 10) -> list:
+        check_type(num_recommendations, int, "num_recommendations")
 
-    def recommend_books_based_off_a_book_simple(self, thebookinquestion: Book, numberofrecommendations = 10) -> list:
-        sortedlist = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
-        truncated_recommendations = sortedlist[:numberofrecommendations]
-        return truncated_recommendations
-    def recommend_books_based_off_a_book_improved(self, thebookinquestion: Book, numberofrecommendations = 10) -> list:
-        #Same genre and sort by highest rating
+        sorted_books = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
+
+        return sorted_books[:num_recommendations]
+    
+    def recommend_books_improved(self, num_recommendations: int = 10) -> list:
+        check_type(num_recommendations, int, "num_recommendations")
+
+        last_book = self.get_books()[-1]
+        last_book_genres = last_book.get_genre().split(', ')
+
         recommendations = []
+        
         for book in self.get_books():
-            if book.get_genre() == thebookinquestion.get_genre() and book.get_id() != thebookinquestion.get_id():
-                recommendations.append(book)
-        recommendations = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
-        truncated_recommendations = recommendations[:numberofrecommendations]
-        return truncated_recommendations
+            if book != last_book:
+                book_genres = book.get_genre().split(', ')
+                genre_overlap_ratio = len(set(last_book_genres)&set(book_genres))/len(last_book_genres)
+                recommendations.append((book, genre_overlap_ratio))
+        
+        sorted_recommendations = sorted(recommendations, key = lambda x: (x[1], x[0].get_rating() is not None, x[0].get_rating()), reverse=True)
+
+        return sorted_recommendations[:num_recommendations]
 
     # dunder methods
     def __repr__(self) -> str:

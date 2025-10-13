@@ -60,15 +60,15 @@ class User:
         self.borrowed_books.append(new_book)
         return True
 
-    def return_book(self, book_id: str) -> bool:
-        check_type(book_id, str, "book_id")
+    def return_book(self, book_title: str) -> bool:
+        check_type(book_title, str, "book_title")
 
         for book in self.get_borrowed_books():
-            if book.get_id() == book_id:
+            if book.get_title() == book_title:
                 self.borrowed_books.remove(book)
                 return True
         
-        print(f"Warning: Book with {book_id} ID not found in borrowed books.")
+        print(f"Warning: Book with {book_title} title not found in borrowed books.")
         return False
 
     # dunder methods
@@ -104,10 +104,10 @@ if __name__ == "__main__":
     print()
 
     print(f"Return a book: {book2}")
-    user.return_book('01')
+    user.return_book('Introduction to Linear Algebra')
     print(f"Borrowed books updated: {user.get_borrowed_books()}")
     print()
 
     print(f"Return not borrowed book: {book4}")
-    user.return_book('03')
+    user.return_book('AI Snake Oil')
     print(f"Returned books updated: {user.get_returned_books()}")
