@@ -7,6 +7,8 @@ from pathlib import Path
 from typing import Optional
 
 from yaslis.utils import download_and_process_data
+from yaslis.library import Library
+from yaslis.benchmark import LibraryBenchmark
 
 
 def prepare_data_command(args):
@@ -66,6 +68,84 @@ def run_tests_command(args):
         sys.exit(1)
 
 
+def benchmark_command(args):
+    """Handle benchmark command"""
+    # Determine which files to use
+    books_file = args.books_file
+    users_file = args.users_file
+    
+    # Default file resolution
+    if not books_file:
+        main_books = Path("configs/books.jsonl")
+        sample_books = Path("configs/sample_books.jsonl")
+        
+        if main_books.exists():
+            books_file = str(main_books)
+            print(f"Using main books file: {books_file}")
+        elif sample_books.exists():
+            books_file = str(sample_books)
+            print(f"Using sample books file: {books_file}")
+        else:
+            print("Error: No books file found. Please run 'yaslis prepare_data' first or specify --books-file")
+            sys.exit(1)
+    
+    if not users_file:
+        main_users = Path("configs/users.jsonl")
+        sample_users = Path("configs/sample_users.jsonl")
+        
+        if main_users.exists():
+            users_file = str(main_users)
+            print(f"Using main users file: {users_file}")
+        elif sample_users.exists():
+            users_file = str(sample_users)
+            print(f"Using sample users file: {users_file}")
+        else:
+            print("Warning: No users file found. Continuing without users data.")
+            users_file = None
+    
+    # Validate files exist
+    if not Path(books_file).exists():
+        print(f"Error: Books file '{books_file}' does not exist")
+        sys.exit(1)
+    
+    if users_file and not Path(users_file).exists():
+        print(f"Error: Users file '{users_file}' does not exist")
+        sys.exit(1)
+    
+    try:
+        # Load library
+        library = Library(books_file, users_file)
+        print(f"Loaded {len(library.get_books())} books and {len(library.get_users())} users")
+        
+        if len(library.get_books()) == 0:
+            print("Error: No books loaded from the specified file")
+            sys.exit(1)
+        
+        # Create benchmark
+        output_dir = args.output_dir or "benchmarks"
+        benchmark = LibraryBenchmark(library, output_dir)
+        
+        # Run benchmark
+        results = benchmark.run_full_benchmark(num_experiments=args.experiments)
+        
+        # Save results
+        output_file = None
+        if args.output_file:
+            output_file = args.output_file
+        
+        saved_path = benchmark.save_results(results, output_file)
+        
+        # Display summary
+        benchmark.print_summary(results)
+        
+        print(f"\n✅ Benchmark completed successfully!")
+        print(f"Results saved to: {saved_path}")
+        
+    except Exception as e:
+        print(f"Error running benchmark: {e}")
+        sys.exit(1)
+
+
 def main():
     """Main CLI entry point"""
     parser = argparse.ArgumentParser(
@@ -106,6 +186,39 @@ def main():
         help='Run tests with verbose output'
     )
     tests_parser.set_defaults(func=run_tests_command)
+    
+    # benchmark command
+    benchmark_parser = subparsers.add_parser(
+        'benchmark',
+        help='Run performance benchmarks on search and recommendation algorithms'
+    )
+    benchmark_parser.add_argument(
+        '--books-file',
+        type=str,
+        help='Path to books JSONL file (default: configs/books.jsonl or configs/sample_books.jsonl)'
+    )
+    benchmark_parser.add_argument(
+        '--users-file',
+        type=str,
+        help='Path to users JSONL file (default: configs/users.jsonl or configs/sample_users.jsonl)'
+    )
+    benchmark_parser.add_argument(
+        '-e', '--experiments',
+        type=int,
+        default=100,
+        help='Number of experiments per test size (default: 100)'
+    )
+    benchmark_parser.add_argument(
+        '-o', '--output-dir',
+        type=str,
+        help='Output directory for benchmark results (default: benchmarks/)'
+    )
+    benchmark_parser.add_argument(
+        '--output-file',
+        type=str,
+        help='Specific output filename for results (default: auto-generated)'
+    )
+    benchmark_parser.set_defaults(func=benchmark_command)
     
     # Parse arguments
     args = parser.parse_args()

@@ -38,26 +38,40 @@ To run the POI management system, you need Python 3.6+ and `pip`.
 
 ## Usage
 
-### Data Preparation
-
+### **Data Preparation**
 YASLIS uses the [Goodreads "Best Books Ever" dataset](https://www.kaggle.com/datasets/austinreese/goodreads-books/) for testing and demonstration.
 
-**Download and process the full dataset:**
+*Download and process the full dataset:*
 ```bash
 yaslis prepare_data
 ```
 
-**Download a sample of specific size:**
+*Download a sample of specific size:*
 ```bash
 yaslis prepare_data 1000        # 1000 books, ~100 users
 yaslis prepare_data 5000 200    # 5000 books, 200 users
 ```
 
-### Running Tests
-
-**Run all unit tests:**
+### **Running unittests**
+*Run all unit tests:*
 ```bash
 yaslis run_tests
+```
+
+### **Benchmarking**
+*Benchmark with default files:*
+```bash
+yaslis benchmark
+```
+
+*Benchmark with specific files:*
+```bash
+yaslis benchmark --books-file configs/my_books.jsonl --users-file configs/my_users.jsonl
+```
+
+*Benchmark with custom parameters:*
+```bash
+yaslis benchmark --experiments 200 --output-dir my_results
 ```
 
 ## LICENSE

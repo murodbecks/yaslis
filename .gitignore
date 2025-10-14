@@ -1,11 +1,15 @@
 playground.ipynb
 
+# config files other than sample ones
 configs/*.jsonl
 configs/*.csv
 configs/*.zip
 
 !configs/sample_books.jsonl
 !configs/sample_users.jsonl
+
+# benchmark files
+benchmarks/*.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
