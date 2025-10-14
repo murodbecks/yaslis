@@ -12,7 +12,7 @@ class User:
         self.id = id
         self.name = name
         self.borrowed_books = [book for book in borrowed_books if isinstance(book, Book)]
-        self.history = [book for book in history + self.borrowed_books if isinstance(book, Book)]
+        self.history = [book for book in history if isinstance(book, Book)]
     
     # getters
     def get_id(self) -> str:

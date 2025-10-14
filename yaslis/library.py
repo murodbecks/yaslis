@@ -172,7 +172,10 @@ class Library:
 
         for user in self.get_users():
             if user.get_name() == user_name:
-                user.return_book(chosen_book)
+                user.return_book(chosen_book.get_title())
+                return True
+        
+        return False
 
     def search_book(self, book_title: str) -> Book:
         check_type(book_title, str, "book_title")
