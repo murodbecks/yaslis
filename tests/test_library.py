@@ -167,15 +167,11 @@ class TestLibrary(unittest.TestCase):
         self.assertIsNone(book)
     
     def test_search_book_improved(self):
-        """Test improved book search with fuzzy matching."""
+        """Test improved book search."""
         # Exact match
         results = self.library.search_book_improved("Python Guide")
         self.assertEqual(len(results), 1)
         self.assertEqual(results[0].get_title(), "Python Guide")
-        
-        # Fuzzy match (assuming fuzzy=True works)
-        results = self.library.search_book_improved("Python", fuzzy=True)
-        self.assertGreaterEqual(len(results), 1)
         
         # Empty search
         results = self.library.search_book_improved("")

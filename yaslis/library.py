@@ -187,6 +187,7 @@ class Library:
         print(f"Warning: {book_title} not found existing books")
         return None  
 
+    # TODO: write faster and more efficient search
     def search_book_improved(self, title: str, fuzzy: bool = True) -> list:
         if not title:
             return []
@@ -213,6 +214,7 @@ class Library:
 
         return sorted_books[:num_recommendations]
     
+    # TODO: add used_name and more personalization while being faster
     def recommend_books_improved(self, num_recommendations: int = 10) -> list:
         check_type(num_recommendations, int, "num_recommendations")
 
