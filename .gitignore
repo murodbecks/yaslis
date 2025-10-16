@@ -11,6 +11,8 @@ configs/*.zip
 # benchmark files
 benchmarks/*.json
 
+!benchmarks/Apple_M4_Max_20251016_162130.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]

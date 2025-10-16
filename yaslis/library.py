@@ -1,5 +1,4 @@
 import os
-import time
 import jsonlines
 import re, difflib
 from typing import Union
@@ -12,6 +11,7 @@ class Library:
     def __init__(self, books_config_file_path: str = None, users_config_file_path: str = None):
         self._all_books = []
         self._all_users = []
+        self._all_books_dict = {}
 
         if books_config_file_path:
             self._load_books(books_config_file_path)
@@ -54,6 +54,8 @@ class Library:
                         continue
 
                     try:
+                        self._all_books_dict[book['id']] = Book(book['id'], book['title'], book['author'], 
+                                                                book['genre'], book['year'], book.get('rating'))
                         self.add_book(book['id'], book['title'], book['author'], 
                                       book['genre'], book['year'], book.get('rating'))
                     except Exception as e:
@@ -76,23 +78,15 @@ class Library:
                         continue
 
                     try:
-                        borrowed_book_ids = user['borrowed_books']
-                        books_in_history_ids = user['history']
-
-                        borrowed_books = []
-                        books_in_history = []
-
-                        for book in self.get_books():
-                            if book.get_id() in borrowed_book_ids:
-                                borrowed_books.append(book)
-                            
-                            if book.get_id() in books_in_history_ids:
-                                books_in_history.append(book)
+                        borrowed_books = [self._all_books_dict[book_id] for book_id in user['borrowed_books']]
+                        books_in_history = [self._all_books_dict[book_id] for book_id in user['history']]
 
                         self.add_user(user['id'], user['name'], borrowed_books, books_in_history)
                     except Exception as e:
                         print(f"Error loading User: {e}")
-
+            
+            del self._all_books_dict
+            
         except Exception as e:
             print(f"Error loading config file: {e}")
 
@@ -192,61 +186,42 @@ class Library:
         return False
 
     def search_book(self, book_title: str) -> Book:
-        starttime = time.perf_counter()
         check_type(book_title, str, "book_title")
         
         for book in self.get_books():
             if book.get_title() == book_title:
-                print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
                 return book
         
         print(f"Warning: {book_title} not found existing books")
-        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
         return None  
 
     # TODO: write faster and more efficient search
-    def search_book_improved(self, title: str, fuzzy: bool = True) -> list:
-        starttime = time.perf_counter()
+    def search_book_improved(self, title: str) -> list:
         if not title:
-            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return []
         query = re.sub(r"\s+", " ", title).strip().lower()
 
         # Exact match
         exact_matches = [b for b in self._all_books if b.get_title().strip().lower() == query]
         if exact_matches:
-            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return exact_matches
-
-        # Fuzzy fallback
-        if fuzzy:
-            all_titles = [b.get_title() for b in self._all_books]
-            close_titles = difflib.get_close_matches(title, all_titles, n=10, cutoff=0.6)
-            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
-            return [b for b in self._all_books if b.get_title() in close_titles]
-
-        # no matches
-        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
+        
         return []
 
     def recommend_books(self, num_recommendations: int = 10) -> list:
-        starttime = time.perf_counter()
         check_type(num_recommendations, int, "num_recommendations")
 
         sorted_books = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
 
-        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
         return sorted_books[:num_recommendations]
     
     def recommend_books_improved(self, user: User, num_recommendations: int = 10) -> list:
-        starttime = time.perf_counter()
         check_type(user, User, "user")
         check_type(num_recommendations, int, "num_recommendations")
 
         # check whether user is in the system
         if user not in self.get_users():
             print(f"Non-existent user: '{user.get_name()}' is not in the system")
-            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return []
         
         # Get user's borrowed books (current + history)
@@ -255,7 +230,6 @@ class Library:
         if not user_books_history:
             # print(f"Warning: User '{user.get_name()}' has no book history")
             # Fallback to general top-rated books
-            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return self.recommend_books(num_recommendations)
         
         # Extract genres from user's books
@@ -266,7 +240,6 @@ class Library:
                 genre_counts[genre] = genre_counts.get(genre, 0) + 1
         
         if not genre_counts:
-            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return self.recommend_books(num_recommendations)
         
         # Score all books not in user's history
@@ -295,7 +268,6 @@ class Library:
         recommendations.sort(key=lambda x: (x[1], x[0].get_rating() or 0), reverse=True)
         
         # Return top recommendations
-        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
         return [book for book, _ in recommendations[:num_recommendations]]
 
     # dunder methods

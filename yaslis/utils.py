@@ -56,6 +56,24 @@ def extract_year(date_published: str) -> int:
     else:
         return 0
 
+def filter_recommended_books(recommended_books, all_book_ids):
+    if not isinstance(recommended_books, str):
+        return []
+    
+    try:
+        filtered_book_ids = []
+        for book_id in recommended_books.split(', '):
+            book_id = book_id.strip()
+            if book_id.isnumeric():
+                processed_id = f'book_{book_id}'
+                if (int(book_id) in all_book_ids) or (processed_id in all_book_ids):
+                    filtered_book_ids.append(book_id)
+    
+        return filtered_book_ids
+    
+    except Exception as e:
+        return []
+
 def generate_books_data(books_df: pd.DataFrame, sample_size: int = None) -> pd.DataFrame:
     # Sample if requested
     if sample_size:
@@ -96,37 +114,32 @@ def generate_users_data(books_df: pd.DataFrame, num_users: int = None) -> pd.Dat
     
     user_info = []
     
-    # Get rows that have recommended_books data
-    valid_rows = books_df[books_df['recommended_books'].notna() & 
-                         (books_df['recommended_books'] != '')].index.tolist()
+    all_book_ids = set(books_df['id'].tolist())
+    filtered_books = books_df['recommended_books'].apply(lambda books: filter_recommended_books(books, all_book_ids)).tolist()
+    filtered_books = [book_ids for book_ids in filtered_books if len(book_ids)>0]
     
-    if not valid_rows:
+    if filtered_books==[]:
         print("Warning: No books with recommended_books data found. Using empty histories.")
+        filtered_books = [[]]
     
-    for i, name in enumerate(selected_names):
+    selected_book_ids = random.choices(filtered_books, k=num_users)
+    
+    for i, (name, book_ids) in enumerate(zip(selected_names, selected_book_ids)):
         user_id = f"user_{10000+i}"
 
         row_info = {'id': user_id, 'name': name, 'borrowed_books': [], 'history': []}
-        
-        # Pick a random book with recommended books data
-        if valid_rows:
-            random_idx = random.choice(valid_rows)
-            recommended_books_str = books_df.loc[random_idx, 'recommended_books']
             
-            if isinstance(recommended_books_str, str) and recommended_books_str.strip():
-                recommended_books = [book.strip() for book in recommended_books_str.split(', ') if book.strip()]
-                
-                len_history = random.randint(1, len(recommended_books))
-                history = random.sample(recommended_books, len_history)
-                row_info['history'] = [prepare_id(book_id) for book_id in history]
+        len_history = random.randint(1, len(book_ids))
+        history = random.sample(book_ids, len_history)
+        row_info['history'] = [prepare_id(book_id) for book_id in history]
 
-                if history:
-                    len_borrowed = random.randint(0, len(history))
-                    borrowed_books = random.sample(history, len_borrowed) if len_borrowed > 0 else []
-                else:
-                    borrowed_books = []
-                
-                row_info['borrowed_books'] = [prepare_id(book_id) for book_id in borrowed_books]
+        if history:
+            len_borrowed = random.randint(0, len(history))
+            borrowed_books = random.sample(history, len_borrowed) if len_borrowed > 0 else []
+        else:
+            borrowed_books = []
+        
+        row_info['borrowed_books'] = [prepare_id(book_id) for book_id in borrowed_books]
 
         user_info.append(row_info)
     
