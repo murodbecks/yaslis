@@ -186,11 +186,36 @@ class TestLibrary(unittest.TestCase):
         self.assertEqual(recommendations[0].get_title(), "AI Basics")  # Rating 4.5
         self.assertEqual(recommendations[1].get_title(), "Python Guide")  # Rating 4.0
     
-    def test_recommend_books_improved(self):
-        """Test improved book recommendations."""
-        recommendations = self.library.recommend_books_improved(2)
-        self.assertLessEqual(len(recommendations), 2)
-        # Test should work based on genre similarity with last book
+    def test_recommend_books_improved_with_user(self):
+        """Test improved recommendation system based on user preferences"""
+        user_books = [self.book1, self.book2]
+        user = User("user1", "Test User", [], user_books)
+        self.library._all_users.append(user)
+        
+        recommendations = self.library.recommend_books_improved(user, 3)
+        
+        self.assertIsInstance(recommendations, list)
+        self.assertLessEqual(len(recommendations), 3)
+        
+        user_titles = {book.get_title() for book in user_books}
+        recommended_titles = {book.get_title() for book in recommendations}
+        self.assertEqual(len(user_titles.intersection(recommended_titles)), 0)
+
+    def test_recommend_books_improved_nonexistent_user(self):
+        """Test improved recommendation with non-existent user"""
+        nonexistent_user = User('user_404', "Nonexistent User", [], [])
+        recommendations = self.library.recommend_books_improved(nonexistent_user, 5)
+        self.assertEqual(recommendations, [])
+
+    def test_recommend_books_improved_user_no_history(self):
+        user = User("user2", "Empty User", [], [])
+        self.library._all_users.append(user)
+        
+        recommendations = self.library.recommend_books_improved(user, 3)
+        
+        self.assertIsInstance(recommendations, list)
+        regular_recommendations = self.library.recommend_books(3)
+        self.assertEqual(len(recommendations), len(regular_recommendations))
     
     def test_equality(self):
         """Test library equality."""

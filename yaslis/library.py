@@ -75,7 +75,20 @@ class Library:
                         continue
 
                     try:
-                        self.add_user(user['id'], user['name'], user['borrowed_books'], user['history'])
+                        borrowed_book_ids = user['borrowed_books']
+                        books_in_history_ids = user['history']
+
+                        borrowed_books = []
+                        books_in_history = []
+
+                        for book in self.get_books():
+                            if book.get_id() in borrowed_book_ids:
+                                borrowed_books.append(book)
+                            
+                            if book.get_id() in books_in_history_ids:
+                                books_in_history.append(book)
+
+                        self.add_user(user['id'], user['name'], borrowed_books, books_in_history)
                     except Exception as e:
                         print(f"Error loading User: {e}")
 
@@ -214,25 +227,60 @@ class Library:
 
         return sorted_books[:num_recommendations]
     
-    # TODO: add used_name and more personalization while being faster
-    def recommend_books_improved(self, num_recommendations: int = 10) -> list:
+    def recommend_books_improved(self, user: User, num_recommendations: int = 10) -> list:
+        check_type(user, User, "user")
         check_type(num_recommendations, int, "num_recommendations")
 
-        last_book = self.get_books()[-1]
-        last_book_genres = last_book.get_genre().split(', ')
+        # check whether user is in the system
+        if user not in self.get_users():
+            print(f"Non-existent user: '{user.get_name()}' is not in the system")
+            return []
+        
+        # Get user's borrowed books (current + history)
+        user_books_history = user.get_history()
+        
+        if not user_books_history:
+            # print(f"Warning: User '{user.get_name()}' has no book history")
+            # Fallback to general top-rated books
+            return self.recommend_books(num_recommendations)
+        
+        # Extract genres from user's books
+        genre_counts = {}
+        for book in user_books_history:
+            book_genres = [g.strip() for g in book.get_genre().split(',') if g.strip()]
+            for genre in book_genres:
+                genre_counts[genre] = genre_counts.get(genre, 0) + 1
+        
+        if not genre_counts:
+            return self.recommend_books(num_recommendations)
+        
+        # Score all books not in user's history
+        total_user_books = len(user_books_history)
 
         recommendations = []
-        
         for book in self.get_books():
-            if book != last_book:
-                book_genres = book.get_genre().split(', ')
-                genre_overlap_ratio = len(set(last_book_genres)&set(book_genres))/len(last_book_genres)
-                recommendations.append((book, genre_overlap_ratio))
+            if book not in user_books_history:
+                book_genres = [g.strip() for g in book.get_genre().split(',') if g.strip()]
+                
+                # Calculate genre similarity score
+                genre_score = 0
+                
+                for genre in book_genres:
+                    if genre in genre_counts:
+                        # Weight by how often user borrowed this genre
+                        genre_score += genre_counts[genre] / total_user_books
+                
+                # Normalize by number of genres in the book
+                if book_genres:
+                    genre_score /= len(book_genres)
+                
+                recommendations.append((book, genre_score))
         
-        sorted_recommendations = sorted(recommendations, key = lambda x: (x[1], x[0].get_rating() is not None, x[0].get_rating()), reverse=True)
-        chosen_recommendations = [book for book, _ in sorted_recommendations[:num_recommendations]]
-
-        return chosen_recommendations
+        # Sort by genre score (primary) and rating (secondary)
+        recommendations.sort(key=lambda x: (x[1], x[0].get_rating() or 0), reverse=True)
+        
+        # Return top recommendations
+        return [book for book, _ in recommendations[:num_recommendations]]
 
     # dunder methods
     def __repr__(self) -> str:

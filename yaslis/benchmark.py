@@ -75,13 +75,10 @@ class LibraryBenchmark:
         available_books = len(self.library.get_books())
         return [min(size, available_books) for size in sizes if size <= available_books]
     
-    def create_test_library(self, size: int) -> Library:
-        """Create a library with specified number of books"""
+    def _create_test_library_book_first(self, size: int) -> Library:
+        """Fallback method: original book-first approach"""
         all_books = self.library.get_books()
-        if size >= len(all_books):
-            return self.library
-        
-        # Create new library with sampled books
+
         test_library = Library()
         sampled_books = random.sample(all_books, size)
         
@@ -94,6 +91,60 @@ class LibraryBenchmark:
                 book.get_published_year(),
                 book.get_rating()
             )
+        
+        return test_library
+
+    def create_test_library(self, size: int) -> Library:
+        """Create library by strategically sampling users and their books"""
+        all_books = self.library.get_books()
+        all_users = self.library.get_users()
+
+        if size >= len(all_books):
+            return self.library
+    
+        test_library = Library()
+        selected_book_titles = []
+        
+        random.shuffle(all_users)
+        for user in all_users:
+            user_books = user.get_all_books()
+            if len(selected_book_titles) + len(user_books) > size:
+                break
+                
+            for book in user_books:
+                if book.get_title() not in selected_book_titles:
+                    selected_book_titles.append(book.get_title())
+                    test_library.add_book(
+                        book.get_id(),
+                        book.get_title(),
+                        book.get_author(),
+                        book.get_genre(),
+                        book.get_published_year(),
+                        book.get_rating()
+                    )
+            
+            test_library.add_user(
+                user.get_id(),
+                user.get_name(),
+                user.get_borrowed_books(),
+                user.get_history()
+                )
+        
+        # If we still need more books, add random ones
+        if len(selected_book_titles) < size:
+            remaining_books = [book for book in all_books if book.get_title() not in selected_book_titles]
+            additional_needed = size - len(selected_book_titles)
+            additional_books = random.sample(remaining_books, min(additional_needed, len(remaining_books)))
+            
+            for book in additional_books:
+                test_library.add_book(
+                    book.get_id(),
+                    book.get_title(),
+                    book.get_author(),
+                    book.get_genre(),
+                    book.get_published_year(),
+                    book.get_rating()
+                )
         
         return test_library
     
@@ -146,7 +197,15 @@ class LibraryBenchmark:
     
     def _benchmark_improved_recommendation(self, test_library: Library, num_recs: int = 10) -> Tuple[float, int, bool]:
         """Benchmark improved recommendation method"""
-        return self._measure_method(test_library.recommend_books_improved, num_recs)
+        available_users = test_library.get_users()
+
+        if not available_users:
+            print("No users with history found, falling back to basic recommendation")
+            return self._measure_method(test_library.recommend_books, num_recs)
+        
+        random_user = random.choice(available_users)
+        
+        return self._measure_method(test_library.recommend_books_improved, random_user, num_recs)
     
     def benchmark_search_methods(self, test_sizes: List[int], num_experiments: int = 100) -> Dict[str, List[BenchmarkResults]]:
         """Benchmark all search methods across different dataset sizes"""

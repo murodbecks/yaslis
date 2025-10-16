@@ -27,6 +27,14 @@ class User:
     def get_history(self) -> list:
         return self.history
     
+    def get_all_books(self) -> list:
+        all_books = self.get_history().copy()
+        for book in self.get_borrowed_books():
+            if book not in all_books:
+                all_books.append(book)
+        
+        return all_books
+    
     def get_returned_books(self) -> list:
         return [book for book in self.get_history() if book not in self.get_borrowed_books()]
 
