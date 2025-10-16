@@ -1,4 +1,5 @@
 import os
+import time
 import jsonlines
 import re, difflib
 from typing import Union
@@ -191,49 +192,61 @@ class Library:
         return False
 
     def search_book(self, book_title: str) -> Book:
+        starttime = time.perf_counter()
         check_type(book_title, str, "book_title")
         
         for book in self.get_books():
             if book.get_title() == book_title:
+                print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
                 return book
         
         print(f"Warning: {book_title} not found existing books")
+        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
         return None  
 
     # TODO: write faster and more efficient search
     def search_book_improved(self, title: str, fuzzy: bool = True) -> list:
+        starttime = time.perf_counter()
         if not title:
+            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return []
         query = re.sub(r"\s+", " ", title).strip().lower()
 
         # Exact match
         exact_matches = [b for b in self._all_books if b.get_title().strip().lower() == query]
         if exact_matches:
+            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return exact_matches
 
         # Fuzzy fallback
         if fuzzy:
             all_titles = [b.get_title() for b in self._all_books]
             close_titles = difflib.get_close_matches(title, all_titles, n=10, cutoff=0.6)
+            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return [b for b in self._all_books if b.get_title() in close_titles]
 
         # no matches
+        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
         return []
 
     def recommend_books(self, num_recommendations: int = 10) -> list:
+        starttime = time.perf_counter()
         check_type(num_recommendations, int, "num_recommendations")
 
         sorted_books = sorted(self.get_books(), key = lambda x: (x.get_rating() is not None, x.get_rating()), reverse=True)
 
+        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
         return sorted_books[:num_recommendations]
     
     def recommend_books_improved(self, user: User, num_recommendations: int = 10) -> list:
+        starttime = time.perf_counter()
         check_type(user, User, "user")
         check_type(num_recommendations, int, "num_recommendations")
 
         # check whether user is in the system
         if user not in self.get_users():
             print(f"Non-existent user: '{user.get_name()}' is not in the system")
+            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return []
         
         # Get user's borrowed books (current + history)
@@ -242,6 +255,7 @@ class Library:
         if not user_books_history:
             # print(f"Warning: User '{user.get_name()}' has no book history")
             # Fallback to general top-rated books
+            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return self.recommend_books(num_recommendations)
         
         # Extract genres from user's books
@@ -252,6 +266,7 @@ class Library:
                 genre_counts[genre] = genre_counts.get(genre, 0) + 1
         
         if not genre_counts:
+            print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
             return self.recommend_books(num_recommendations)
         
         # Score all books not in user's history
@@ -280,6 +295,7 @@ class Library:
         recommendations.sort(key=lambda x: (x[1], x[0].get_rating() or 0), reverse=True)
         
         # Return top recommendations
+        print(f"Time taken: {time.perf_counter() - starttime:.6f} seconds")
         return [book for book, _ in recommendations[:num_recommendations]]
 
     # dunder methods
