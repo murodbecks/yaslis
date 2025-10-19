@@ -12,6 +12,7 @@ class Library:
         self._all_books = []
         self._all_users = []
         self._all_books_dict = {}
+        self._all_books_dict_title = {} #used for faster searching by title
 
         if books_config_file_path:
             self._load_books(books_config_file_path)
@@ -56,6 +57,10 @@ class Library:
                     try:
                         self._all_books_dict[book['id']] = Book(book['id'], book['title'], book['author'], 
                                                                 book['genre'], book['year'], book.get('rating'))
+                        
+                        self._all_books_dict_title[book['title']] = Book(book['id'], book['title'], book['author'], 
+                                                                book['genre'], book['year'], book.get('rating'))
+                        
                         self.add_book(book['id'], book['title'], book['author'], 
                                       book['genre'], book['year'], book.get('rating'))
                     except Exception as e:
@@ -95,6 +100,10 @@ class Library:
                  published_year: int, rating: Union[int, float] = None) -> bool:
         book = Book(book_id, title, author, genre, published_year, rating)
         self._all_books.append(book)
+        #shaky code
+        self._all_books_dict_title[title] = book
+        self._all_books_dict[book_id] = book
+        #end of shaky code
         return True
     
     def add_user(self, user_id: str, name: str, borrowed_books: list = [], history: list = []) -> bool:
@@ -113,7 +122,10 @@ class Library:
         all_books = self.get_books()
         for book in all_books:
             if book.get_title() == book_title:
+
                 self._all_books.remove(book)
+                self._all_books_dict.pop(book.get_id(), None)
+                self._all_books_dict_title.pop(book_title, None)
         
         # removing from user history and borrowed books
         for user in self._all_users:
@@ -196,16 +208,14 @@ class Library:
         return None  
 
     # TODO: write faster and more efficient search
-    def search_book_improved(self, title: str) -> list:
-        if not title:
-            return []
-        query = re.sub(r"\s+", " ", title).strip().lower()
-
-        # Exact match
-        exact_matches = [b for b in self._all_books if b.get_title().strip().lower() == query]
-        if exact_matches:
-            return exact_matches
+    def search_book_improved(self, book_title: str) -> list:
+        check_type(book_title, str, "book_title")
         
+        thebook = self._all_books_dict_title.get(book_title)
+        if thebook is not None:
+            return [thebook]
+        
+        print(f"Warning: {book_title} not found existing books")
         return []
 
     def recommend_books(self, num_recommendations: int = 10) -> list:

@@ -27,6 +27,17 @@ class TestLibrary(unittest.TestCase):
         # Create empty library
         self.library = Library()
         self.library._all_books = [self.book1, self.book2, self.book3]
+        self.library._all_books_dict = {
+            self.book1.get_id(): self.book1,
+            self.book2.get_id(): self.book2,
+            self.book3.get_id(): self.book3}
+        
+        
+        self.library._all_books_dict_title = {
+            self.book1.get_title(): self.book1,
+            self.book2.get_title(): self.book2,
+            self.book3.get_title(): self.book3}
+        
         self.library._all_users = [self.user1, self.user2]
     
     def create_temp_config_files(self):
