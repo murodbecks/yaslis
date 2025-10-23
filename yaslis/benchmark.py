@@ -257,7 +257,7 @@ class LibraryBenchmark:
         num_books = len(self.library.get_books())
         
         # Generate test sizes
-        test_sizes = self.generate_test_sizes(num_books)
+        test_sizes = [1000, 10_000, 50_000] #self.generate_test_sizes(num_books)
         
         # Run benchmarks
         search_results = self.benchmark_search_methods(test_sizes, num_experiments)

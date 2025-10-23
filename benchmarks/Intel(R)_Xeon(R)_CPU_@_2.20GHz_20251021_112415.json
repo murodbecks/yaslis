@@ -1,0 +1,145 @@
+{
+  "metadata": {
+    "total_books": 52199,
+    "test_sizes": [
+      1000,
+      10000,
+      50000
+    ],
+    "processor": "Intel(R) Xeon(R) CPU @ 2.20GHz",
+    "num_experiments": 100,
+    "timestamp": "2025-10-21 11:24:15"
+  },
+  "search_results": {
+    "basic_search": [
+      {
+        "dataset_size": 1000,
+        "method_name": "basic_search",
+        "avg_time_ms": 0.15791624697158113,
+        "std_time_ms": 0.08712700950687563,
+        "avg_memory_kb": 7.86359375,
+        "std_memory_kb": 0.0421875,
+        "success_rate": 1.0,
+        "num_experiments": 100
+      },
+      {
+        "dataset_size": 10000,
+        "method_name": "basic_search",
+        "avg_time_ms": 1.1979352901107632,
+        "std_time_ms": 0.7390034937331295,
+        "avg_memory_kb": 78.171875,
+        "std_memory_kb": 0.0,
+        "success_rate": 1.0,
+        "num_experiments": 100
+      },
+      {
+        "dataset_size": 50000,
+        "method_name": "basic_search",
+        "avg_time_ms": 8.02956589992391,
+        "std_time_ms": 4.780098421757695,
+        "avg_memory_kb": 390.671875,
+        "std_memory_kb": 0.0,
+        "success_rate": 1.0,
+        "num_experiments": 100
+      }
+    ],
+    "improved_search": [
+      {
+        "dataset_size": 1000,
+        "method_name": "improved_search",
+        "avg_time_ms": 0.0019683496793732047,
+        "std_time_ms": 0.0011563463291007138,
+        "avg_memory_kb": 0.012265625,
+        "std_memory_kb": 0.04453125,
+        "success_rate": 1.0,
+        "num_experiments": 100
+      },
+      {
+        "dataset_size": 10000,
+        "method_name": "improved_search",
+        "avg_time_ms": 0.0023124917061068118,
+        "std_time_ms": 0.00119587232888518,
+        "avg_memory_kb": 0.008046875,
+        "std_memory_kb": 0.00234375,
+        "success_rate": 1.0,
+        "num_experiments": 100
+      },
+      {
+        "dataset_size": 50000,
+        "method_name": "improved_search",
+        "avg_time_ms": 0.0014523108256980777,
+        "std_time_ms": 0.0008695535003668841,
+        "avg_memory_kb": 0.008046875,
+        "std_memory_kb": 0.00234375,
+        "success_rate": 1.0,
+        "num_experiments": 100
+      }
+    ]
+  },
+  "recommendation_results": {
+    "basic_recommendation": [
+      {
+        "dataset_size": 1000,
+        "method_name": "basic_recommendation",
+        "avg_time_ms": 0.7885477173840627,
+        "std_time_ms": 0.14953116174484415,
+        "avg_memory_kb": 32.50765625,
+        "std_memory_kb": 7.843360999442658,
+        "success_rate": 1.0,
+        "num_experiments": 50
+      },
+      {
+        "dataset_size": 10000,
+        "method_name": "basic_recommendation",
+        "avg_time_ms": 14.74884127615951,
+        "std_time_ms": 3.4919210584973315,
+        "avg_memory_kb": 748.275625,
+        "std_memory_kb": 0.015467960838455728,
+        "success_rate": 1.0,
+        "num_experiments": 50
+      },
+      {
+        "dataset_size": 50000,
+        "method_name": "basic_recommendation",
+        "avg_time_ms": 135.0097911793273,
+        "std_time_ms": 25.581510547805042,
+        "avg_memory_kb": 4184.16453125,
+        "std_memory_kb": 15.46338551800001,
+        "success_rate": 1.0,
+        "num_experiments": 50
+      }
+    ],
+    "improved_recommendation": [
+      {
+        "dataset_size": 1000,
+        "method_name": "improved_recommendation",
+        "avg_time_ms": 21.579628880135715,
+        "std_time_ms": 6.457367646404706,
+        "avg_memory_kb": 47.62251953125,
+        "std_memory_kb": 8.409920210859374,
+        "success_rate": 1.0,
+        "num_experiments": 50
+      },
+      {
+        "dataset_size": 10000,
+        "method_name": "improved_recommendation",
+        "avg_time_ms": 396.42699399846606,
+        "std_time_ms": 118.60900391426945,
+        "avg_memory_kb": 1453.257109375,
+        "std_memory_kb": 0.580507767466403,
+        "success_rate": 1.0,
+        "num_experiments": 50
+      },
+      {
+        "dataset_size": 50000,
+        "method_name": "improved_recommendation",
+        "avg_time_ms": 1736.3954196410486,
+        "std_time_ms": 626.6745537949367,
+        "avg_memory_kb": 7679.4133203125,
+        "std_memory_kb": 0.535942449028791,
+        "success_rate": 1.0,
+        "num_experiments": 50
+      }
+    ]
+  }
+}

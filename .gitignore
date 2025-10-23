@@ -11,7 +11,8 @@ configs/*.zip
 # benchmark files
 benchmarks/*.json
 
-!benchmarks/Apple_M4_Max_20251016_162130.json
+!benchmarks/Apple_M4_Max_20251021_140920.json
+!benchmarks/Intel(R)_Xeon(R)_CPU_@_2.20GHz_20251021_112415.json
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
